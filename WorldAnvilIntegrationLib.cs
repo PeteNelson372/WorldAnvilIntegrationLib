@@ -1,4 +1,28 @@
-﻿using System.Net.Http.Headers;
+﻿/**************************************************************************************************************************
+* Copyright 2025, Peter R. Nelson
+*
+* This file is part of the World Anvil Integration Library. The World Anvil Integration Library allows C# applications
+* to make use of the World Anvil API accessed through web HTTPS endpoints. The World Anvil API documentation can be
+* found at: https://www.worldanvil.com/api/external/boromir/documentation
+* 
+* The World Anvil Integration Library is free software: you can redistribute it and/or modify it under the terms
+* of the GNU General Public License as published by the Free Software Foundation,
+* either version 3 of the License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with this program.
+* The text of the GNU General Public License (GPL) is found in the LICENSE file.
+* If the LICENSE file is not present or the text of the GNU GPL is not present in the LICENSE file,
+* see https://www.gnu.org/licenses/.
+*
+* For questions about the World Anvil Integration Library or about licensing, please email
+* support@brookmonte.com
+*
+***************************************************************************************************************************/
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
