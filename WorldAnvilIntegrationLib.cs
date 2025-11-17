@@ -1350,7 +1350,7 @@ namespace WorldAnvilIntegrationLib
                 var request = new HttpRequestMessage(HttpMethod.Get, apiEndpoint);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+                var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
                 response.EnsureSuccessStatusCode();
 
@@ -1385,7 +1385,7 @@ namespace WorldAnvilIntegrationLib
                     Content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json")
                 };
 
-                var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+                var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
                 response.EnsureSuccessStatusCode();
 
@@ -1424,16 +1424,26 @@ namespace WorldAnvilIntegrationLib
             // see https://www.worldanvil.com/api/auth/key when logged in to World Anvil
             HttpRequestMessage request = CreateWARequest(endpoint, HttpMethod.Get, WorldAnvilUserApiToken, WorldAnvilAPIKey);
 
-            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            HttpResponseMessage response;
+            try
             {
-                // try again with Cloudflair worker
-                string cloudflairEndpoint = $"{CloudflairWorkerBaseUrl}identity";
-                HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Get, WorldAnvilUserApiToken, WorldAnvilAPIKey);
+                response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
-                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // try again with Cloudflair worker
+                    string cloudflairEndpoint = $"{CloudflairWorkerBaseUrl}identity";
+                    HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Get, WorldAnvilUserApiToken, WorldAnvilAPIKey);
+
+                    response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest).ConfigureAwait(false);
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetUserIdentityAsync: {ex.Message}");
+                throw;
+            }
+
 
             response.EnsureSuccessStatusCode();
 
@@ -1467,7 +1477,7 @@ namespace WorldAnvilIntegrationLib
 
             HttpRequestMessage request = CreateWARequest(endpoint, HttpMethod.Get, WorldAnvilUserApiToken, WorldAnvilAPIKey);
 
-            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -1475,7 +1485,7 @@ namespace WorldAnvilIntegrationLib
                 string cloudflairEndpoint = $"{CloudflairWorkerBaseUrl}{url}?id={id}&granularity={granularity}";
                 HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Get, WorldAnvilUserApiToken, WorldAnvilAPIKey);
 
-                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest);
+                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest).ConfigureAwait(false);
             }
 
             response.EnsureSuccessStatusCode();
@@ -1497,7 +1507,7 @@ namespace WorldAnvilIntegrationLib
 
             HttpRequestMessage request = CreateWARequest(endpoint, HttpMethod.Put, WorldAnvilUserApiToken, WorldAnvilAPIKey, jsonData);
 
-            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Forbidden
                 || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -1507,7 +1517,7 @@ namespace WorldAnvilIntegrationLib
 
                 HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Put, WorldAnvilUserApiToken, WorldAnvilAPIKey, jsonData);
 
-                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest);
+                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest).ConfigureAwait(false);
             }
 
             response.EnsureSuccessStatusCode();
@@ -1530,7 +1540,7 @@ namespace WorldAnvilIntegrationLib
 
             HttpRequestMessage request = CreateWARequest(endpoint, HttpMethod.Delete, WorldAnvilUserApiToken, WorldAnvilAPIKey);
 
-            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -1539,7 +1549,7 @@ namespace WorldAnvilIntegrationLib
 
                 HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Delete, WorldAnvilUserApiToken, WorldAnvilAPIKey);
 
-                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest);
+                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest).ConfigureAwait(false);
             }
 
             response.EnsureSuccessStatusCode();
@@ -1556,7 +1566,7 @@ namespace WorldAnvilIntegrationLib
 
             HttpRequestMessage request = CreateWARequest(endpoint, HttpMethod.Patch, WorldAnvilUserApiToken, WorldAnvilAPIKey, jsonData);
 
-            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -1565,7 +1575,7 @@ namespace WorldAnvilIntegrationLib
 
                 HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Patch, WorldAnvilUserApiToken, WorldAnvilAPIKey, jsonData);
 
-                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest);
+                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest).ConfigureAwait(false);
             }
 
             response.EnsureSuccessStatusCode();
@@ -1604,7 +1614,7 @@ namespace WorldAnvilIntegrationLib
 
             HttpRequestMessage request = CreateWARequest(endpoint, HttpMethod.Post, WorldAnvilUserApiToken, WorldAnvilAPIKey, content);
 
-            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request);
+            var response = await WorldAnvilApiClient.HttpClient.SendAsync(request).ConfigureAwait(false);
             if (response.StatusCode == System.Net.HttpStatusCode.Forbidden || response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 // try again with Cloudflair worker
@@ -1616,7 +1626,7 @@ namespace WorldAnvilIntegrationLib
                 }
 
                 HttpRequestMessage cloudflairRequest = CreateWARequest(cloudflairEndpoint, HttpMethod.Post, WorldAnvilUserApiToken, WorldAnvilAPIKey, content);
-                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest);
+                response = await WorldAnvilApiClient.HttpClient.SendAsync(cloudflairRequest).ConfigureAwait(false);
             }
 
             response.EnsureSuccessStatusCode();
