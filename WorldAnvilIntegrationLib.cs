@@ -149,6 +149,31 @@ namespace WorldAnvilIntegrationLib
             return DoGetAsync("article", articleId, granularity).Result;
         }
 
+        public WorldAnvilArticle? GetWorldAnvilArticleObjectById(string articleId, int granularity)
+        {
+            try
+            {
+                JsonDocument? result = GetArticleById(articleId, granularity) ?? throw new Exception("GetArticleById returned null");
+
+                string resultString = result.RootElement.GetRawText();
+
+                // serialize the JSON into the WorldAnvilUser object
+                WorldAnvilArticle? worldAnvilArticle = JsonDocumentExtensions.ToObject<WorldAnvilArticle>(result, JsonDocumentExtensions.JsonConversionOptions);
+
+                if (worldAnvilArticle != null)
+                {
+                    worldAnvilArticle.granularity = granularity;
+                }
+
+                return worldAnvilArticle;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+
         //  PUT /api/external/boromir/article
         public JsonDocument CreateArticle(JsonDocument articleData)
         {
@@ -1766,9 +1791,9 @@ namespace WorldAnvilIntegrationLib
         public string? folderId { get; set; }
         public string? tags { get; set; }
         public WorldAnvilDate? updateDate { get; set; }
-        public string? subscribergroups { get; set; }
+        public List<WorldAnvilSubscriberGroup>? subscribergroups { get; set; }
         public bool? isEditable { get; set; }
-        public string? success { get; set; }
+        public bool? success { get; set; }
         public string? position { get; set; }
         public string? excerpt { get; set; }
         public int? wordcount { get; set; }
@@ -3204,16 +3229,16 @@ namespace WorldAnvilIntegrationLib
 
     public class WorldAnvilDate
     {
-        public string? date;
-        public string? timezone;
-        public int? timezone_type;
+        public string? date { get; set; }
+        public string? timezone { get; set; }
+        public int? timezone_type { get; set; }
     }
 
     public class WorldAnvilAncestry
     {
-        public JsonDocument? firstUp;
-        public JsonDocument? secondUp;
-        public JsonDocument? thirdUp;
+        public JsonDocument? firstUp { get; set; }
+        public JsonDocument? secondUp { get; set; }
+        public JsonDocument? thirdUp { get; set; }
     }
 
     public class DisplayStyles
