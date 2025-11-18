@@ -2344,7 +2344,7 @@ namespace WorldAnvilIntegrationLib
         public WorldAnvilMembershipPrototype? membershipPrototype { get; set; }
         public string? chapterhouse { get; set; }
         public WorldAnvilWorld? activeWorld { get; set; }
-        public string? activeCampaign { get; set; }
+        public WorldAnvilCampaignReference? activeCampaign { get; set; }
         public string? activeCharacter { get; set; }
         public string? activeSession { get; set; }
         public WorldAnvilImage? avatar { get; set; }
