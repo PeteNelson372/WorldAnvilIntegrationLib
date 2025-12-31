@@ -363,7 +363,7 @@ namespace WorldAnvilIntegrationLib
         {
             try
             {
-                JsonDocument? result = GetCategoryById(categoryId, granularity) ?? throw new Exception("GetWorldById returned null");
+                JsonDocument? result = GetCategoryById(categoryId, granularity) ?? throw new Exception("GetCategoryById returned null");
 
                 // serialize the JSON into the WorldAnvilUser object
                 WorldAnvilCategory? worldAnvilCategory = JsonDocumentExtensions.ToObject<WorldAnvilCategory>(result, JsonDocumentExtensions.JsonConversionOptions);
@@ -575,6 +575,29 @@ namespace WorldAnvilIntegrationLib
         public JsonDocument GetMapById(string mapId, int granularity)
         {
             return DoGetAsync("map", mapId, granularity).Result;
+        }
+
+        public WorldAnvilMap? GetWorldAnvilMapObjectById(string mapId, int granularity)
+        {
+            try
+            {
+                JsonDocument? result = GetCategoryById(mapId, granularity) ?? throw new Exception("GetMapById returned null");
+
+                // serialize the JSON into the WorldAnvilUser object
+                WorldAnvilMap? worldAnvilMap = JsonDocumentExtensions.ToObject<WorldAnvilMap>(result, JsonDocumentExtensions.JsonConversionOptions);
+
+                if (worldAnvilMap != null)
+                {
+                    worldAnvilMap.granularity = granularity;
+                }
+
+                return worldAnvilMap;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
         //   PUT /api/external/boromir/map
@@ -1332,6 +1355,24 @@ namespace WorldAnvilIntegrationLib
         public List<JsonDocument> ListWorldsForUser(string userId, int limit, int offset)
         {
             return DoPostAsync<List<JsonDocument>>("user/worlds", userId, limit, offset).Result;
+        }
+
+        public List<WorldAnvilWorld> ListWorldObjectsForUser(string userId, int limit, int offset)
+        {
+            List<JsonDocument> worlds = DoPostAsync<List<JsonDocument>>("user/worlds", userId, limit, offset).Result;
+
+            List<WorldAnvilWorld> worldObjects = [];
+
+            foreach (JsonDocument worldJson in worlds)
+            {
+                WorldAnvilWorld? worldAnvilWorld = JsonDocumentExtensions.ToObject<WorldAnvilWorld>(worldJson, JsonDocumentExtensions.JsonConversionOptions);
+                if (worldAnvilWorld != null)
+                {
+                    worldObjects.Add(worldAnvilWorld);
+                }
+            }
+
+            return worldObjects;
         }
 
 
